@@ -1,3 +1,4 @@
+const path = require('path')
 const express = require('express')
 const cors = require('cors')
 const mongoose = require('mongoose')
@@ -213,6 +214,20 @@ app.delete('/api/enrollments/:studentId/:courseId', async function (req, res) {
     res.status(500).json({
       message: 'Unable to remove enrollment.'
     })
+  }
+})
+
+// Serve the Vue production frontend
+const frontendPath = path.join(__dirname, '../frontend-vue/dist')
+
+app.use(express.static(frontendPath))
+
+// Support Vue Router when refreshing pages
+app.use(function (req, res, next) {
+  if (req.method === 'GET' && !req.path.startsWith('/api/')) {
+    res.sendFile(path.join(frontendPath, 'index.html'))
+  } else {
+    next()
   }
 })
 
