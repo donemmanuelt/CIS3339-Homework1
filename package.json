@@ -1,0 +1,13 @@
+
+{
+  "name": "cis3339-homework1",
+  "version": "1.0.0",
+  "description": "Student Management System using Vue 3 and MongoDB",
+  "scripts": {
+    "install:frontend": "npm --prefix frontend-vue install",
+    "install:backend": "npm --prefix backend install",
+    "build": "npm --prefix frontend-vue run build",
+    "start": "npm --prefix backend start"
+  }
+}
+
