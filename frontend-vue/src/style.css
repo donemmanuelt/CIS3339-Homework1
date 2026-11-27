@@ -209,3 +209,34 @@ th {
   border-radius: 5px;
   margin-bottom: 15px;
 }
+
+/* Courses page */
+.course-form-section,
+.course-list-section {
+  background-color: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+  margin-top: 20px;
+}
+
+.course-form-section h2,
+.course-list-section h2 {
+  margin-top: 0;
+}
+
+.course-form-section form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.course-form-section button {
+  width: fit-content;
+}
+
+@media (max-width: 600px) {
+  .course-form-section form {
+    grid-template-columns: 1fr;
+  }
+}
