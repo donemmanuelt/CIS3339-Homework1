@@ -140,3 +140,72 @@ th {
     padding: 20px 12px;
   }
 }
+
+/* Student form */
+.student-form-section {
+  background-color: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+  margin-top: 20px;
+}
+
+.student-form-section h2 {
+  margin-top: 0;
+}
+
+/* Form layout */
+.student-form-section form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+/* Individual fields */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: bold;
+}
+
+.form-group input {
+  width: 100%;
+}
+
+/* Add button */
+.student-form-section button {
+  width: fit-content;
+}
+
+/* Mobile layout */
+@media (max-width: 600px) {
+  .student-form-section form {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Student list */
+.student-list-section {
+  background-color: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+  margin-top: 25px;
+}
+
+.student-list-section h2 {
+  margin-top: 0;
+}
+
+/* Form validation messages */
+.error-message {
+  color: #b91c1c;
+  background-color: #fee2e2;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
