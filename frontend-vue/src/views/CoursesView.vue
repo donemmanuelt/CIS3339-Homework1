@@ -1,23 +1,19 @@
 <script setup>
 import { ref } from 'vue'
+import { useManagementStore } from '../stores/management'
+
+const store = useManagementStore()
 
 const courseId = ref('')
 const courseName = ref('')
-const courses = ref([])
 const errorMessage = ref('')
 
 function addCourse() {
-  if (courseId.value.trim() === '' || courseName.value.trim() === '') {
+  if (
+    courseId.value.trim() === '' ||
+    courseName.value.trim() === ''
+  ) {
     errorMessage.value = 'Please fill in all fields.'
-    return
-  }
-
-  const duplicateCourse = courses.value.some(function (course) {
-    return course.id === courseId.value.trim()
-  })
-
-  if (duplicateCourse) {
-    errorMessage.value = 'A course with this ID already exists.'
     return
   }
 
@@ -26,17 +22,16 @@ function addCourse() {
     name: courseName.value.trim()
   }
 
-  courses.value.push(newCourse)
+  const result = store.addCourse(newCourse)
+
+  if (result !== '') {
+    errorMessage.value = result
+    return
+  }
 
   errorMessage.value = ''
   courseId.value = ''
   courseName.value = ''
-}
-
-function deleteCourse(courseId) {
-  courses.value = courses.value.filter(function (course) {
-    return course.id !== courseId
-  })
 }
 </script>
 
@@ -89,15 +84,17 @@ function deleteCourse(courseId) {
         </thead>
 
         <tbody>
-          <tr v-if="courses.length === 0">
+          <tr v-if="store.courses.length === 0">
             <td colspan="3">No courses have been added yet.</td>
           </tr>
 
-          <tr v-for="course in courses" :key="course.id">
+          <tr v-for="course in store.courses" :key="course.id">
             <td>{{ course.id }}</td>
             <td>{{ course.name }}</td>
             <td>
-              <button @click="deleteCourse(course.id)">Delete</button>
+              <button @click="store.deleteCourse(course.id)">
+                Delete
+              </button>
             </td>
           </tr>
         </tbody>
