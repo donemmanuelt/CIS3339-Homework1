@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useManagementStore } from '../stores/management'
 
 const store = useManagementStore()
@@ -9,6 +9,14 @@ const selectedCourseId = ref('')
 const viewingCourseId = ref('')
 const errorMessage = ref('')
 const successMessage = ref('')
+
+onMounted(async function () {
+  try {
+    await store.fetchAll()
+  } catch (error) {
+    errorMessage.value = error.message
+  }
+})
 
 const enrolledStudents = computed(function () {
   if (viewingCourseId.value === '') {
@@ -28,7 +36,7 @@ const enrolledStudents = computed(function () {
   })
 })
 
-function enrollStudent() {
+async function enrollStudent() {
   if (
     selectedStudentId.value === '' ||
     selectedCourseId.value === ''
@@ -38,7 +46,7 @@ function enrollStudent() {
     return
   }
 
-  const result = store.addEnrollment(
+  const result = await store.addEnrollment(
     selectedStudentId.value,
     selectedCourseId.value
   )
@@ -52,18 +60,19 @@ function enrollStudent() {
   errorMessage.value = ''
   successMessage.value = 'Student successfully enrolled!'
 
-  // Automatically display the course just enrolled in
   viewingCourseId.value = selectedCourseId.value
 }
 
-function removeEnrollment(studentId, courseId) {
-  store.enrollments = store.enrollments.filter(function (enrollment) {
-    return !(enrollment.studentId === studentId &&
-             enrollment.courseId === courseId)
-  })
+async function removeEnrollment(studentId, courseId) {
+  try {
+    await store.removeEnrollment(studentId, courseId)
 
-  successMessage.value = 'Enrollment removed successfully.'
-  errorMessage.value = ''
+    successMessage.value = 'Enrollment removed successfully.'
+    errorMessage.value = ''
+  } catch (error) {
+    errorMessage.value = error.message
+    successMessage.value = ''
+  }
 }
 </script>
 
@@ -71,16 +80,20 @@ function removeEnrollment(studentId, courseId) {
   <div class="enrollments-page">
     <h1>Enrollments</h1>
 
+    <p v-if="store.loading">
+      Loading data...
+    </p>
+
+    <p v-if="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </p>
+
+    <p v-if="successMessage" class="success-message">
+      {{ successMessage }}
+    </p>
+
     <section class="enrollment-form-section">
       <h2>Enroll a Student</h2>
-
-      <p v-if="errorMessage" class="error-message">
-        {{ errorMessage }}
-      </p>
-
-      <p v-if="successMessage" class="success-message">
-        {{ successMessage }}
-      </p>
 
       <form @submit.prevent="enrollStudent">
         <div class="form-group">

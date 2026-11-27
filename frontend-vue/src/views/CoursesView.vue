@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useManagementStore } from '../stores/management'
 
 const store = useManagementStore()
@@ -8,7 +8,15 @@ const courseId = ref('')
 const courseName = ref('')
 const errorMessage = ref('')
 
-function addCourse() {
+onMounted(async function () {
+  try {
+    await store.fetchCourses()
+  } catch (error) {
+    errorMessage.value = error.message
+  }
+})
+
+async function addCourse() {
   if (
     courseId.value.trim() === '' ||
     courseName.value.trim() === ''
@@ -22,7 +30,7 @@ function addCourse() {
     name: courseName.value.trim()
   }
 
-  const result = store.addCourse(newCourse)
+  const result = await store.addCourse(newCourse)
 
   if (result !== '') {
     errorMessage.value = result
@@ -32,6 +40,15 @@ function addCourse() {
   errorMessage.value = ''
   courseId.value = ''
   courseName.value = ''
+}
+
+async function deleteCourse(courseId) {
+  try {
+    await store.deleteCourse(courseId)
+    errorMessage.value = ''
+  } catch (error) {
+    errorMessage.value = error.message
+  }
 }
 </script>
 
@@ -92,7 +109,7 @@ function addCourse() {
             <td>{{ course.id }}</td>
             <td>{{ course.name }}</td>
             <td>
-              <button @click="store.deleteCourse(course.id)">
+              <button @click="deleteCourse(course.id)">
                 Delete
               </button>
             </td>

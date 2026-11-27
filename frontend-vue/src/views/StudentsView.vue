@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useManagementStore } from '../stores/management'
 
 const store = useManagementStore()
@@ -10,6 +10,14 @@ const studentPhone = ref('')
 const studentZip = ref('')
 const errorMessage = ref('')
 const searchQuery = ref('')
+
+onMounted(async function () {
+  try {
+    await store.fetchStudents()
+  } catch (error) {
+    errorMessage.value = error.message
+  }
+})
 
 const filteredStudents = computed(function () {
   const query = searchQuery.value.toLowerCase().trim()
@@ -24,7 +32,7 @@ const filteredStudents = computed(function () {
   })
 })
 
-function addStudent() {
+async function addStudent() {
   if (
     studentName.value.trim() === '' ||
     studentId.value.trim() === '' ||
@@ -42,7 +50,7 @@ function addStudent() {
     zip: studentZip.value.trim()
   }
 
-  const result = store.addStudent(newStudent)
+  const result = await store.addStudent(newStudent)
 
   if (result !== '') {
     errorMessage.value = result
@@ -55,6 +63,15 @@ function addStudent() {
   studentId.value = ''
   studentPhone.value = ''
   studentZip.value = ''
+}
+
+async function deleteStudent(studentId) {
+  try {
+    await store.deleteStudent(studentId)
+    errorMessage.value = ''
+  } catch (error) {
+    errorMessage.value = error.message
+  }
 }
 </script>
 
@@ -153,7 +170,7 @@ function addStudent() {
             <td>{{ student.phone }}</td>
             <td>{{ student.zip }}</td>
             <td>
-              <button @click="store.deleteStudent(student.id)">
+              <button @click="deleteStudent(student.id)">
                 Delete
               </button>
             </td>
@@ -163,4 +180,3 @@ function addStudent() {
     </section>
   </div>
 </template>
-
