@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 // Store the values entered into the form
 const studentName = ref('')
@@ -9,6 +9,25 @@ const studentZip = ref('')
 
 // Store the students added to the application
 const students = ref([])
+
+const searchQuery = ref('')
+
+// Filter students based on the search input
+const filteredStudents = computed(function () {
+  const searchTerm = searchQuery.value.trim().toLowerCase()
+
+  if (searchTerm === '') {
+    return students.value
+  }
+
+  return students.value.filter(function (student) {
+    return (
+      student.name.toLowerCase().includes(searchTerm) ||
+      student.id.toLowerCase().includes(searchTerm)
+    )
+  })
+})
+
 
 // Add a student to the student list
 function addStudent() {
@@ -121,6 +140,17 @@ const errorMessage = ref('')
     <section class="student-list-section">
   <h2>Student List</h2>
 
+  <div class="search-box">
+  <label for="studentSearch">Search Students</label>
+
+  <input
+    id="studentSearch"
+    v-model="searchQuery"
+    type="text"
+    placeholder="Search by name or student ID"
+  />
+</div>
+
   <table>
     <thead>
       <tr>
@@ -128,17 +158,29 @@ const errorMessage = ref('')
         <th>Student ID</th>
         <th>Phone</th>
         <th>ZIP Code</th>
+        <th>Actions</th>
       </tr>
     </thead>
 
     <tbody>
-      <tr v-for="student in students" :key="student.id">
-        <td>{{ student.name }}</td>
-        <td>{{ student.id }}</td>
-        <td>{{ student.phone }}</td>
-        <td>{{ student.zip }}</td>
-      </tr>
-    </tbody>
+  <tr v-if="students.length === 0">
+    <td colspan="5">No students have been added yet.</td>
+  </tr>
+
+  <tr v-else-if="filteredStudents.length === 0">
+    <td colspan="5">No students found matching your search.</td>
+  </tr>
+
+  <tr v-for="student in filteredStudents" :key="student.id">
+    <td>{{ student.name }}</td>
+    <td>{{ student.id }}</td>
+    <td>{{ student.phone }}</td>
+    <td>{{ student.zip }}</td>
+    <td>
+      <button @click="deleteStudent(student.id)">Delete</button>
+    </td>
+  </tr>
+</tbody>
   </table>
 </section>
   </div>
